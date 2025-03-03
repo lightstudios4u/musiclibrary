@@ -6,6 +6,7 @@ interface Song {
   id: number;
   title: string;
   artist: string;
+  url: string;
 }
 
 // ✅ GET handler for fetching songs
