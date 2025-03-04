@@ -1,0 +1,103 @@
+/* Make the audio player all in one line */
+.rhap_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #222222;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100%;
+  gap: 10px;
+}
+
+.rhap_main-controls {
+  order: 1;
+}
+/* Default play/pause button color */
+.rhap_play-pause-button {
+  color: #616161;
+  transition: color 0.3s ease-in-out; /* ✅ Smooth transition */
+}
+
+/* Hover effect */
+.rhap_play-pause-button:hover {
+  color: #afafaf;
+}
+
+.rhap_progress-section {
+  flex-grow: 1;
+  order: 2;
+}
+
+.rhap_volume-controls {
+  order: 3;
+}
+
+.rhap_current-time {
+  color: #ffb300;
+}
+
+.rhap_total-time {
+  color: #ffb300;
+}
+/* Make progress bar take up remaining space */
+/* .rhap_progress-container {
+  flex-grow: 1;
+  margin: 0 10px;
+} */
+
+.rhap_controls-section {
+  display: flex;
+  align-items: center;
+  margin-top: 0px !important;
+}
+
+.rhap_rewind-button {
+  display: none;
+}
+
+.rhap_forward-button {
+  display: none;
+}
+
+.rhap_volume-bar-area {
+  width: 65px;
+}
+
+.rhap_stacked {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.rhap_progress-section {
+  width: 330px;
+  margin-left: 10px;
+}
+
+/* Customize button colors */
+.rhap_play-button,
+.rhap_rewind-button,
+.rhap_forward-button {
+  color: #ff6600; /* Orange buttons */
+}
+
+/* Ensure the volume bar fits inline */
+.rhap_volume-container {
+  display: flex;
+  align-items: center;
+}
+
+.rhap_additional-controls {
+  display: none;
+}
+
+.headercontainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #222222;
+  color: #ffffff;
+  width: 100%;
+}
