@@ -11,7 +11,7 @@ function page() {
         justifyContent: "center",
       }}
     >
-      <UploadPage refreshSongs={() => setRefresh((prev) => !prev)} />
+      <UploadPage />
     </div>
   );
 }

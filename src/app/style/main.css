@@ -1,44 +1,48 @@
 /* Make the audio player all in one line */
 .rhap_container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #222222;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background-color: #222222 !important;
   border-radius: 10px;
-  padding: 10px;
-  width: 100%;
-  gap: 10px;
+  padding: 10px !important;
+  width: 100% !important;
+  max-width: 500px !important;
+  gap: 10px !important;
 }
 
 .rhap_main-controls {
-  order: 1;
+  order: 1 !important;
 }
 /* Default play/pause button color */
 .rhap_play-pause-button {
-  color: #616161;
-  transition: color 0.3s ease-in-out; /* ✅ Smooth transition */
+  color: #616161 !important;
+  transition: color 0.3s ease-in-out !important; /* ✅ Smooth transition */
 }
 
 /* Hover effect */
 .rhap_play-pause-button:hover {
-  color: #afafaf;
+  color: #afafaf !important;
 }
 
 .rhap_progress-section {
-  flex-grow: 1;
-  order: 2;
+  flex-grow: 1 !important;
+  order: 2 !important;
+  padding: 5px;
+  width: 100% !important;
+  max-width: 330px !important;
 }
 
 .rhap_volume-controls {
-  order: 3;
+  order: 3 !important;
 }
 
 .rhap_current-time {
-  color: #ffb300;
+  color: #ffb300 !important;
 }
 
 .rhap_total-time {
-  color: #ffb300;
+  color: #ffb300 !important;
 }
 /* Make progress bar take up remaining space */
 /* .rhap_progress-container {
@@ -47,32 +51,36 @@
 } */
 
 .rhap_controls-section {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
   margin-top: 0px !important;
 }
 
 .rhap_rewind-button {
-  display: none;
+  display: none !important;
 }
 
 .rhap_forward-button {
-  display: none;
+  display: none !important;
 }
 
 .rhap_volume-bar-area {
-  width: 65px;
+  width: 65px !important;
 }
 
 .rhap_stacked {
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 5px !important;
 }
 
 .rhap_progress-section {
-  width: 330px;
-  margin-left: 10px;
+  width: 330px !important;
+  margin-left: 10px !important;
+}
+.rhap_progress-bar {
+  height: 6px !important; /* ✅ Slightly thicker */
+  border-radius: 10px !important;
 }
 
 /* Customize button colors */
@@ -84,12 +92,39 @@
 
 /* Ensure the volume bar fits inline */
 .rhap_volume-container {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .rhap_additional-controls {
-  display: none;
+  display: none !important;
+}
+
+/* vote container */
+.votecontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ Centers items horizontally */
+  justify-content: center; /* ✅ Centers items vertically */
+  gap: 10px; /* ✅ Adds spacing between elements */
+  color: #ffffff;
+  width: 80px;
+  height: 100%;
+  position: absolute;
+  top: 50%; /* ✅ Centers vertically */
+  right: -80px;
+  transform: translateY(-50%); /* ✅ Adjusts vertical positioning */
+}
+
+.upvote,
+.downvote {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.upvote:hover,
+.downvote:hover {
+  transform: scale(1.1);
 }
 
 .headercontainer {
@@ -100,4 +135,60 @@
   background-color: #222222;
   color: #ffffff;
   width: 100%;
+}
+
+.maincontainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.modalcontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #0000008e;
+  color: #ffffff;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  z-index: 1000 !important;
+}
+
+.modal {
+  background-color: #222222;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 25%;
+}
+
+.standardinput {
+  background-color: #222222;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 500px;
+  font-size: 16px;
+}
+
+.standardbutton {
+  background-color: #ff6600;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.altbutton {
+  background-color: #ff6600;
 }

@@ -3,11 +3,7 @@ import { useState, useRef } from "react";
 import { genres } from "../../lib/metadata"; // Import the genres array
 import { BeatLoader } from "react-spinners";
 
-export default function UploadPage({
-  refreshSongs,
-}: {
-  refreshSongs: () => void;
-}) {
+export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [artwork, setArtwork] = useState<File | null>(null);
   const [songTitle, setSongTitle] = useState<string>("");
@@ -16,6 +12,9 @@ export default function UploadPage({
   const [tempo, setTempo] = useState<number>(0);
   const [key, setKey] = useState<string>("");
   const [search, setSearch] = useState("");
+  const [spotifyUrl, setSpotifyUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [appleUrl, setAppleUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const artworkInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,7 +52,10 @@ export default function UploadPage({
       !artist ||
       selectedGenres.length === 0 ||
       !key ||
-      tempo <= 0
+      tempo <= 0 ||
+      !spotifyUrl ||
+      !youtubeUrl ||
+      !appleUrl
     ) {
       alert("Please fill out all fields and select at least one genre.");
       return;
@@ -69,6 +71,9 @@ export default function UploadPage({
     formData.append("genres", selectedGenres.join(", ")); // ✅ Store genres as a comma-separated string
     formData.append("tempo", tempo.toString());
     formData.append("key", key);
+    formData.append("spotifyUrl", spotifyUrl);
+    formData.append("youtubeUrl", youtubeUrl);
+    formData.append("appleUrl", appleUrl);
 
     try {
       const res = await fetch("../api/upload", {
@@ -77,10 +82,8 @@ export default function UploadPage({
       });
 
       const data = await res.json();
-      console.log(data);
       //   setUploadResponse(data);
       setSuccessMessage("🎉 Upload Successful!"); // ✅ Show success message
-      refreshSongs(); // ✅ Trigger refresh after upload
 
       // ✅ Clear inputs after upload
       setFile(null);
@@ -91,6 +94,9 @@ export default function UploadPage({
       setTempo(0);
       setKey("");
       setSearch("");
+      setSpotifyUrl("");
+      setYoutubeUrl("");
+      setAppleUrl("");
       if (fileInputRef.current) fileInputRef.current.value = "";
       if (artworkInputRef.current) artworkInputRef.current.value = "";
     } catch (error) {
@@ -196,6 +202,29 @@ export default function UploadPage({
           onChange={(e) => setKey(e.target.value)}
           required
         />
+        <p>Spotify URL</p>
+        <input
+          type="text"
+          placeholder="Spotify URL"
+          value={spotifyUrl}
+          onChange={(e) => setSpotifyUrl(e.target.value)}
+        />
+        <p>YouTube URL</p>
+        <input
+          type="text"
+          placeholder="YouTube URL"
+          value={youtubeUrl}
+          onChange={(e) => setYoutubeUrl(e.target.value)}
+        />
+        <p>Apple Music URL</p>
+        <input
+          type="text"
+          placeholder="Apple Music URL"
+          value={appleUrl}
+          onChange={(e) => setAppleUrl(e.target.value)}
+        />
+
+        {/* ✅ File Inputs */}
 
         <p>Song File</p>
         <input

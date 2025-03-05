@@ -2,13 +2,24 @@
 import { useEffect, useState } from "react";
 import Player from "./Player";
 import Image from "next/image";
-import { Song } from "../api/songs/route";
+import { Song } from "@/lib/types";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import DownloadIcon from "@mui/icons-material/Download";
+import "../style/main.css";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { FaSpotify } from "react-icons/fa";
+import { FaApple } from "react-icons/fa";
+import { FaYoutube } from "react-icons/fa";
+import CampaignIcon from "@mui/icons-material/Campaign";
 
-export default function FetchedSongs({ refresh }: { refresh: boolean }) {
+export default function FetchedSongs() {
   const [songs, setSongs] = useState<Song[]>([]);
+  const [refresh, setRefresh] = useState(false);
+  const [showModal, setShowModal] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [songIdToDelete, setSongIdToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchSongs = () => {
@@ -18,100 +29,277 @@ export default function FetchedSongs({ refresh }: { refresh: boolean }) {
         .catch((error) => console.error("Error fetching songs:", error));
     };
 
-    fetchSongs(); // Initial fetch
+    fetchSongs();
   }, [refresh]);
 
-  return (
-    <div
-      style={{
-        margin: "2rem",
-        height: "80vh",
-        width: "70%",
-        overflowY: "scroll",
-      }}
-    >
-      <ul>
-        {songs.map((song) => (
-          <li
-            key={song.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              padding: "1rem",
-              borderRadius: "14px",
-              backgroundColor: "rgba(130, 130, 130, 0.1)",
-            }}
-          >
-            <Image
-              src={song.artwork_url}
-              alt="Artwork"
-              width={100}
-              height={100}
-              style={{
-                borderRadius: "4px",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              }}
-            />
-            <div
-              style={{
-                fontSize: "16px",
-                width: "100px",
-                textAlign: "center",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <p style={{ textShadow: "0px 4px 6px rgba(0,0,0,.01)" }}>
-                {song.title}
-              </p>
-              <p style={{ color: "#ffb300" }}>{song.artist}</p>
-            </div>
+  const handleVote = async (song_id: number, vote: number) => {
+    const token = localStorage.getItem("token");
+    // if (!token) {
+    //   alert("You must be logged in to vote");
+    //   return;
+    // }
 
-            {/* ✅ Correctly passing only the song.url as a string */}
-            <Player url={song.url} />
+    await fetch("/api/vote", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ song_id, vote }),
+    });
+
+    // Update score instantly
+    setSongs((prev) =>
+      prev.map((song) =>
+        song.id === song_id ? { ...song, score: song.score + vote } : song
+      )
+    );
+  };
+
+  const deleteSong = async (songId: number) => {
+    setSongIdToDelete(songId);
+    setShowModal(true);
+
+    const res = await fetch(`/api/songs/${songId}/delete`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      alert("Song deleted successfully!");
+      setRefresh(!refresh); // Toggle refresh to re-fetch songs
+      // Refresh state or remove song from UI
+    } else {
+      alert("Failed to delete song");
+    }
+  };
+
+  return (
+    <div className="maincontainer">
+      {showModal && initialLoad && (
+        <div className="modalcontainer">
+          <div className="modal">
+            <h1>Welcome to the Indie Share!</h1>
+            <div>
+              <div
+                style={{
+                  color: "orange",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                Get your music heard
+                <CampaignIcon style={{ marginLeft: "7px" }} />
+              </div>
+              <br />
+              <br />
+              - Upload your music
+              <br />
+              - Browse through the library
+              <br />
+              - Vote on what you hear
+              <br />
+              - Add songs to custom playlists
+              <br />- Share with your friends
+            </div>
+            <br />
             <div
+              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+            >
+              <button
+                className="standardbutton "
+                onClick={() => setShowModal(false)}
+              >
+                Login
+              </button>
+              <button
+                className="standardbutton altbutton"
+                onClick={() => setShowModal(false)}
+              >
+                Create Account
+              </button>
+              <a
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowModal(false)}
+              >
+                Continue
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+      {showModal && !initialLoad && (
+        <div className="modalcontainer">
+          <div className="modal">
+            <h1>Just checking</h1>
+            <p>Are you sure you want to delete this song?</p>
+            <br />
+            <button
+              className="standardbutton deletebutton"
+              onClick={() => setShowModal(false)}
+            >
+              Delete
+            </button>
+            <button
+              className="standardbutton cancelbutton"
+              onClick={() => setShowModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div
+        style={{
+          margin: "2rem",
+          height: "80vh",
+          width: "70%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+        }}
+      >
+        <ul style={{ maxWidth: "1000px" }}>
+          {songs.map((song) => (
+            <li
+              key={song.id}
               style={{
                 display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
+                alignItems: "center",
                 gap: "1rem",
-                width: "200px",
-                fontSize: "13px",
+                padding: "1rem",
+                borderRadius: "14px",
+                backgroundColor: "rgba(130, 130, 130, 0.1)",
+                position: "relative",
               }}
             >
-              <p>
-                <strong>Tempo</strong>
-                <br></br> {song.tempo}
-              </p>
-              <p>
-                <strong>Key</strong>
-                <br></br> {song.song_key}
-              </p>
-              <p>
-                <strong>Genres</strong>
-                <br></br> {song.genres}
-              </p>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                flexWrap: "wrap",
-                gap: "1rem",
-                width: "30px",
-                fontSize: "13px",
-              }}
-            >
-              <FavoriteBorderIcon />
-              <PlaylistAddIcon />
-              <DownloadIcon />
-            </div>
-          </li>
-        ))}
-      </ul>
+              <div className="votecontainer">
+                <ArrowDropUpIcon
+                  style={{
+                    color: "white",
+                    cursor: "pointer",
+                    fontSize: "60px",
+                  }}
+                  className="upvote"
+                  onClick={() => handleVote(song.id, 1)}
+                />
+                <p className="votecount">0</p>
+                <ArrowDropDownIcon
+                  style={{
+                    color: "white",
+                    cursor: "pointer",
+                    fontSize: "60px",
+                  }}
+                  className="downvote"
+                  onClick={() => handleVote(song.id, -1)}
+                />
+              </div>
+
+              <Image
+                src={song.artwork_url}
+                alt="Artwork"
+                width={100}
+                height={100}
+                style={{
+                  borderRadius: "4px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                }}
+              />
+              <div
+                style={{
+                  fontSize: "16px",
+                  width: "100px",
+                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <p style={{ textShadow: "0px 4px 6px rgba(0,0,0,.01)" }}>
+                    {song.title}
+                  </p>
+                  <p style={{ color: "#ffb300" }}>{song.artist}</p>
+                  <div>
+                    <p style={{ color: "grey" }}>Added on:</p>
+                    <p style={{ color: "grey" }}>
+                      {new Date(song.created_at).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ✅ Correctly passing only the song.url as a string */}
+              <Player url={song.url} />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: "1rem",
+                  width: "120px",
+                  fontSize: "14px",
+                }}
+              >
+                <p>
+                  <strong style={{ color: "grey" }}>Tempo</strong>
+                  <br></br> {song.tempo}
+                </p>
+                <p>
+                  <strong style={{ color: "grey" }}>Key</strong>
+                  <br></br> {song.song_key}
+                </p>
+                <p>
+                  <strong style={{ color: "grey" }}>Genres</strong>
+                  <br></br> {song.genres}
+                </p>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  flexWrap: "wrap",
+                  gap: "1rem",
+                  width: "30px",
+                  fontSize: "13px",
+                }}
+              >
+                <FavoriteBorderIcon />
+                <PlaylistAddIcon />
+                <DownloadIcon />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "1rem",
+                  width: "fit-content",
+                  fontSize: "18px",
+                  position: "absolute",
+                  right: "22%",
+                  bottom: "10px",
+                }}
+              >
+                <FaSpotify />
+                <FaApple />
+                <FaYoutube />
+                <button onClick={() => deleteSong(song.id)}>❌ Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

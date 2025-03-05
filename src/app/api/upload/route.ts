@@ -4,7 +4,6 @@ import pool from "../../../lib/db"; // ✅ Ensure correct MySQL connection
 
 export async function POST(req: NextRequest) {
   try {
-    // Parse FormData request
     const formData = await req.formData();
     const file = formData.get("file") as File;
     const artwork = formData.get("artwork") as File;
@@ -13,7 +12,27 @@ export async function POST(req: NextRequest) {
     const genres = formData.get("genres") as string;
     const tempo = formData.get("tempo") as string;
     const key = formData.get("key") as string;
+    const spotifyUrl = formData.get("spotifyUrl") as string;
+    const youtubeUrl = formData.get("youtubeUrl") as string;
+    const appleUrl = formData.get("appleUrl") as string;
 
+    //Check if artist exists
+    const [existingArtists] = await pool.query<any[]>(
+      "SELECT id FROM artists WHERE name = ?",
+      [artist]
+    );
+
+    let artist_id;
+    if (existingArtists.length > 0) {
+      artist_id = existingArtists[0].id;
+    } else {
+      // ✅ Insert new artist
+      const [artistResult] = await pool.query(
+        "INSERT INTO artists (name) VALUES (?)",
+        [artist]
+      );
+      artist_id = (artistResult as any).insertId;
+    }
     // ✅ Validate input
     if (!file || !artwork || !title || !artist) {
       return NextResponse.json(
@@ -35,7 +54,7 @@ export async function POST(req: NextRequest) {
     };
 
     const songUploadResult = await s3.upload(songParams).promise();
-    const songUrl = "https://" + songUploadResult.Location; // ✅ Get actual uploaded file URL
+    const songUrl = songUploadResult.Location; // ✅ Get actual uploaded file URL
     console.log(songUrl);
     // ✅ Upload artwork file to DigitalOcean Spaces
     const artworkParams = {
@@ -50,8 +69,20 @@ export async function POST(req: NextRequest) {
 
     // ✅ Insert song metadata into MySQL database
     await pool.query(
-      "INSERT INTO songs (title, artist, url, artwork_url, genres, tempo, song_key) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [title, artist, songUrl, artworkUrl, genres, tempo, key]
+      "INSERT INTO songs (title, artist, url, artwork_url, genres, tempo, song_key, spotify_url, apple_url, youtube_url, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        title,
+        artist,
+        songUrl,
+        artworkUrl,
+        genres,
+        tempo,
+        key,
+        spotifyUrl,
+        appleUrl,
+        youtubeUrl,
+        artist_id, // ✅ Now matches the column count
+      ]
     );
 
     return NextResponse.json(

@@ -2,18 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "../../../lib/db";
 import { RowDataPacket } from "mysql2";
 import { Timestamp } from "aws-sdk/clients/apigateway";
-
-export interface Song {
-  id: number;
-  title: string;
-  artist: string;
-  url: string;
-  created_at: Timestamp;
-  artwork_url: string;
-  genres: string;
-  tempo: number;
-  song_key: string;
-}
+import { Song } from "@/lib/types";
 
 // ✅ GET handler for fetching songs
 export async function GET() {
