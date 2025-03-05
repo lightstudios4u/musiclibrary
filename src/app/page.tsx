@@ -1,12 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useEffect } from "react";
 import styles from "./page.module.css";
 import "./style/main.css";
 import FetchedSongs from "./components/FetchedSongs";
-import UploadPage from "./components/UploadFile";
+import { useSongStore } from "../lib/songStore";
 
 export default function Home() {
-  const [refresh, setRefresh] = useState(false);
+  const { fetchSongs } = useSongStore();
+  useEffect(() => {
+    fetchSongs();
+  }, [fetchSongs]);
 
   return (
     <main className={styles.main}>

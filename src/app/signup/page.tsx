@@ -1,45 +1,44 @@
 "use client";
 import { useState } from "react";
+import { useAuthStore } from "../../lib/authStore";
+import { useRouter } from "next/navigation";
 
-export default function Register({ onRegister }: { onRegister: () => void }) {
+export default function Register() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // ✅ Added confirmation field
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const router = useRouter();
+
+  const register = useAuthStore((state) => state.register); // ✅ Use Zustand's register function
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setError(null);
+    setSuccess(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match"); // ✅ Check if passwords match
+      setError("Passwords do not match"); // ✅ Password validation
       return;
     }
 
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error || "Registration failed");
-      return;
+    const errorMessage = await register(email, username, password);
+    if (errorMessage) {
+      setError(errorMessage);
+    } else {
+      setSuccess("🎉 Registration successful!");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
     }
-
-    setSuccess("🎉 Registration successful! Please log in.");
-    onRegister(); // ✅ Callback to switch to login
   };
 
   return (
     <div className="modalcontainer">
       <div className="modal">
         <h2>Welcome!</h2>
-        <br></br>
         <form
           onSubmit={handleRegister}
           style={{ display: "flex", flexDirection: "column", gap: "1rem" }}

@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Player from "./Player";
 import Image from "next/image";
-import { Song } from "@/lib/types";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -13,65 +12,64 @@ import { FaSpotify } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import { useSongStore } from "../../lib/songStore";
 
 export default function FetchedSongs() {
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [refresh, setRefresh] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [songIdToDelete, setSongIdToDelete] = useState<number | null>(null);
+  const { songs, deleteSong, vote } = useSongStore();
 
-  useEffect(() => {
-    const fetchSongs = () => {
-      fetch("/api/songs")
-        .then((res) => res.json())
-        .then((data) => setSongs(data))
-        .catch((error) => console.error("Error fetching songs:", error));
-    };
+  //   useEffect(() => {
+  //     const fetchSongs = () => {
+  //       fetch("/api/songs")
+  //         .then((res) => res.json())
+  //         .then((data) => setSongs(data))
+  //         .catch((error) => console.error("Error fetching songs:", error));
+  //     };
 
-    fetchSongs();
-  }, [refresh]);
+  //     fetchSongs();
+  //   }, [refresh]);
 
-  const handleVote = async (song_id: number, vote: number) => {
-    const token = localStorage.getItem("token");
-    // if (!token) {
-    //   alert("You must be logged in to vote");
-    //   return;
-    // }
+  //   const handleVote = async (song_id: number, vote: number) => {
+  //     const token = localStorage.getItem("token");
+  //     // if (!token) {
+  //     //   alert("You must be logged in to vote");
+  //     //   return;
+  //     // }
 
-    await fetch("/api/vote", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ song_id, vote }),
-    });
+  //     await fetch("/api/vote", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({ song_id, vote }),
+  //     });
 
-    // Update score instantly
-    setSongs((prev) =>
-      prev.map((song) =>
-        song.id === song_id ? { ...song, score: song.score + vote } : song
-      )
-    );
-  };
+  //     // Update score instantly
+  //     setSongs((prev) =>
+  //       prev.map((song) =>
+  //         song.id === song_id ? { ...song, score: song.score + vote } : song
+  //       )
+  //     );
+  //   };
 
-  const deleteSong = async (songId: number) => {
-    setSongIdToDelete(songId);
-    setShowModal(true);
+  //   const deleteSong = async (songId: number) => {
+  //     setSongIdToDelete(songId);
+  //     setShowModal(true);
 
-    const res = await fetch(`/api/songs/${songId}/delete`, {
-      method: "DELETE",
-    });
+  //     const res = await fetch(`/api/songs/${songId}/delete`, {
+  //       method: "DELETE",
+  //     });
 
-    if (res.ok) {
-      alert("Song deleted successfully!");
-      setRefresh(!refresh); // Toggle refresh to re-fetch songs
-      // Refresh state or remove song from UI
-    } else {
-      alert("Failed to delete song");
-    }
-  };
+  //     if (res.ok) {
+  //       alert("Song deleted successfully!");
+  //       setRefresh(!refresh); // Toggle refresh to re-fetch songs
+  //       // Refresh state or remove song from UI
+  //     } else {
+  //       alert("Failed to delete song");
+  //     }
+  //   };
 
   return (
     <div className="maincontainer">
@@ -181,7 +179,7 @@ export default function FetchedSongs() {
                     fontSize: "60px",
                   }}
                   className="upvote"
-                  onClick={() => handleVote(song.id, 1)}
+                  onClick={() => vote(song.id, 1)}
                 />
                 <p className="votecount">0</p>
                 <ArrowDropDownIcon
@@ -191,7 +189,7 @@ export default function FetchedSongs() {
                     fontSize: "60px",
                   }}
                   className="downvote"
-                  onClick={() => handleVote(song.id, -1)}
+                  onClick={() => vote(song.id, -1)}
                 />
               </div>
 

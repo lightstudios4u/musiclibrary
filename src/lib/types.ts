@@ -1,5 +1,3 @@
-import { integer } from "aws-sdk/clients/cloudfront";
-
 export interface Song {
   id: number;
   title: string;
@@ -15,6 +13,12 @@ export interface Song {
   apple_url: string;
   score: number;
   artist_id: number;
+}
+
+export interface SongState {
+  songs: Song[];
+  fetchSongs: () => Promise<void>;
+  vote: (song_id: number, vote: number) => void;
 }
 
 export interface UploadResponse {

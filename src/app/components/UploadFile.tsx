@@ -15,6 +15,7 @@ export default function UploadPage() {
   const [spotifyUrl, setSpotifyUrl] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [appleUrl, setAppleUrl] = useState("");
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const artworkInputRef = useRef<HTMLInputElement>(null);
 
@@ -76,12 +77,12 @@ export default function UploadPage() {
     formData.append("appleUrl", appleUrl);
 
     try {
-      const res = await fetch("../api/upload", {
+      await fetch("../api/upload", {
         method: "POST",
         body: formData,
       });
 
-      const data = await res.json();
+      //   const data = await res.json();
       //   setUploadResponse(data);
       setSuccessMessage("🎉 Upload Successful!"); // ✅ Show success message
 

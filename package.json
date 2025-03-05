@@ -26,7 +26,8 @@
     "react-h5-audio-player": "^3.10.0-rc.1",
     "react-icons": "^5.5.0",
     "react-spinners": "^0.15.0",
-    "wavesurfer.js": "^7.9.1"
+    "wavesurfer.js": "^7.9.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
