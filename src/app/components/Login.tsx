@@ -6,24 +6,30 @@ import { useRouter } from "next/navigation";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
   const { login } = useAuthStore();
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    setError("");
+    setSuccess(false);
 
-    const data = await res.json();
-    if (res.ok) {
-      localStorage.setItem("token", data.token);
-      login(data.token, data.user);
-      router.push("/");
-    } else {
-      alert("Login failed");
+    try {
+      const errorMessage = await login(email, password);
+      if (errorMessage) {
+        setError(errorMessage);
+        return;
+      }
+
+      setSuccess(true); // ✅ Show success message
+      setTimeout(() => {
+        router.push("/"); // ✅ Redirect after delay
+      }, 1500);
+    } catch (error) {
+      console.error(error);
+      setError("An unexpected error occurred.");
     }
   };
 
@@ -55,6 +61,16 @@ export default function Login() {
             Login
           </button>
         </form>
+
+        {/* ✅ Success Message */}
+        {success && (
+          <p style={{ color: "green", marginTop: "10px" }}>
+            🎉 Login Successful!
+          </p>
+        )}
+
+        {/* ✅ Error Message */}
+        {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
       </div>
     </div>
   );

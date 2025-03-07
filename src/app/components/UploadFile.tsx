@@ -2,6 +2,7 @@
 import { useState, useRef } from "react";
 import { genres } from "../../lib/metadata"; // Import the genres array
 import { BeatLoader } from "react-spinners";
+import { useAuthStore } from "@/lib/authStore";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -15,6 +16,7 @@ export default function UploadPage() {
   const [spotifyUrl, setSpotifyUrl] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [appleUrl, setAppleUrl] = useState("");
+  const { user } = useAuthStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const artworkInputRef = useRef<HTMLInputElement>(null);
@@ -75,6 +77,7 @@ export default function UploadPage() {
     formData.append("spotifyUrl", spotifyUrl);
     formData.append("youtubeUrl", youtubeUrl);
     formData.append("appleUrl", appleUrl);
+    formData.append("user_id", user ? user.id.toString() : "");
 
     try {
       await fetch("../api/upload", {
@@ -109,172 +112,292 @@ export default function UploadPage() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-      <h1>Upload a Song</h1>
+    <div
+      style={{
+        maxWidth: "600px",
+        margin: "auto",
+        padding: "20px",
+        borderRadius: "10px",
+        backgroundColor: "#111", // Deep black background
+        color: "white", // White text for contrast
+      }}
+    >
+      <h1
+        style={{ textAlign: "center", marginBottom: "20px", color: "#ffb300" }}
+      >
+        Upload a Song
+      </h1>
+
       <form
         onSubmit={handleUpload}
-        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+        style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
       >
-        <input
-          type="text"
-          placeholder="Song Title"
-          value={songTitle}
-          onChange={(e) => setSongTitle(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Artist"
-          value={artist}
-          onChange={(e) => setArtist(e.target.value)}
-          required
-        />
-
-        {/* ✅ Searchable Genre Input */}
-        <p>Genres:</p>
-        <input
-          type="text"
-          placeholder="Search genres..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {/* Show filtered genres when searching */}
-        {search && (
-          <ul
-            style={{
-              border: "1px solid #ddd",
-              padding: "5px",
-              maxHeight: "150px",
-              overflowY: "auto",
-            }}
-          >
-            {filteredGenres.map((g) => (
-              <li
-                key={g}
-                onClick={() => addGenre(g)}
-                style={{ cursor: "pointer", padding: "5px 10px" }}
-              >
-                {g}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {/* Show selected genres as pill boxes */}
+        {/* 🔹 Basic Information */}
         <div
           style={{
-            marginTop: "10px",
             display: "flex",
-            flexWrap: "wrap",
-            gap: "5px",
+            flexDirection: "column",
+            gap: "10px",
+            padding: "10px",
+            backgroundColor: "#222",
+            borderRadius: "8px",
           }}
         >
-          {selectedGenres.map((genre) => (
-            <span
-              key={genre}
-              style={{
-                backgroundColor: "#ffb300",
-                padding: "5px 10px",
-                borderRadius: "15px",
-                cursor: "pointer",
-              }}
-              onClick={() => removeGenre(genre)}
-            >
-              {genre} ✖
-            </span>
-          ))}
+          <h3 style={{ color: "#ffb300" }}>Song Information</h3>
+          <label>Title</label>
+          <input
+            type="text"
+            value={songTitle}
+            onChange={(e) => setSongTitle(e.target.value)}
+            required
+            style={{
+              padding: "8px",
+              backgroundColor: "#333",
+              color: "white",
+              border: "1px solid #444",
+              borderRadius: "5px",
+            }}
+            placeholder="Enter song title"
+          />
+
+          <label>Artist</label>
+          <input
+            type="text"
+            value={artist}
+            onChange={(e) => setArtist(e.target.value)}
+            required
+            style={{
+              padding: "8px",
+              backgroundColor: "#333",
+              color: "white",
+              border: "1px solid #444",
+              borderRadius: "5px",
+            }}
+            placeholder="Enter artist name"
+          />
         </div>
 
-        <p>Tempo</p>
-        <input
-          type="number"
-          placeholder="Tempo"
-          value={tempo === 0 ? "" : tempo}
-          onChange={(e) => setTempo(parseInt(e.target.value))}
-          required
-        />
+        {/* 🔹 Genres Section */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            padding: "10px",
+            backgroundColor: "#222",
+            borderRadius: "8px",
+          }}
+        >
+          <h3 style={{ color: "#ffb300" }}>Genres</h3>
+          <input
+            type="text"
+            placeholder="Search genres..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "8px",
+              backgroundColor: "#333",
+              color: "white",
+              border: "1px solid #444",
+              borderRadius: "5px",
+            }}
+          />
 
-        <p>Key</p>
-        <input
-          type="text"
-          placeholder="Key"
-          value={key}
-          onChange={(e) => setKey(e.target.value)}
-          required
-        />
-        <p>Spotify URL</p>
-        <input
-          type="text"
-          placeholder="Spotify URL"
-          value={spotifyUrl}
-          onChange={(e) => setSpotifyUrl(e.target.value)}
-        />
-        <p>YouTube URL</p>
-        <input
-          type="text"
-          placeholder="YouTube URL"
-          value={youtubeUrl}
-          onChange={(e) => setYoutubeUrl(e.target.value)}
-        />
-        <p>Apple Music URL</p>
-        <input
-          type="text"
-          placeholder="Apple Music URL"
-          value={appleUrl}
-          onChange={(e) => setAppleUrl(e.target.value)}
-        />
+          {/* Show filtered genres when searching */}
+          {search && (
+            <ul
+              style={{
+                border: "1px solid #555",
+                padding: "5px",
+                maxHeight: "150px",
+                overflowY: "auto",
+                backgroundColor: "#222",
+                borderRadius: "5px",
+              }}
+            >
+              {filteredGenres.map((g) => (
+                <li
+                  key={g}
+                  onClick={() => addGenre(g)}
+                  style={{
+                    cursor: "pointer",
+                    padding: "5px 10px",
+                    borderBottom: "1px solid #333",
+                  }}
+                >
+                  {g}
+                </li>
+              ))}
+            </ul>
+          )}
 
-        {/* ✅ File Inputs */}
+          {/* Selected Genres */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "5px",
+              marginTop: "10px",
+            }}
+          >
+            {selectedGenres.map((genre) => (
+              <span
+                key={genre}
+                style={{
+                  backgroundColor: "#ffb300",
+                  padding: "5px 10px",
+                  borderRadius: "15px",
+                  cursor: "pointer",
+                  color: "black",
+                  fontWeight: "bold",
+                }}
+                onClick={() => removeGenre(genre)}
+              >
+                {genre} ✖
+              </span>
+            ))}
+          </div>
+        </div>
 
-        <p>Song File</p>
-        <input
-          type="file"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          required
-          ref={fileInputRef}
-        />
+        {/* 🔹 Song Details */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            padding: "10px",
+            backgroundColor: "#222",
+            borderRadius: "8px",
+          }}
+        >
+          <h3 style={{ color: "#ffb300" }}>Song Details</h3>
+          <label>Tempo</label>
+          <input
+            type="number"
+            value={tempo === 0 ? "" : tempo}
+            onChange={(e) => setTempo(parseInt(e.target.value))}
+            required
+            style={{
+              padding: "8px",
+              backgroundColor: "#333",
+              color: "white",
+              border: "1px solid #444",
+              borderRadius: "5px",
+            }}
+          />
 
-        <p>Artwork</p>
-        <input
-          type="file"
-          onChange={(e) => setArtwork(e.target.files?.[0] || null)}
-          required
-          ref={artworkInputRef}
-        />
+          <label>Key</label>
+          <input
+            type="text"
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+            required
+            style={{
+              padding: "8px",
+              backgroundColor: "#333",
+              color: "white",
+              border: "1px solid #444",
+              borderRadius: "5px",
+            }}
+          />
+        </div>
 
-        <button type="submit" disabled={loading}>
+        {/* 🔹 Streaming Links */}
+        <div
+          style={{
+            padding: "10px",
+            backgroundColor: "#222",
+            borderRadius: "8px",
+          }}
+        >
+          <h3 style={{ color: "#ffb300" }}>Streaming Links (Optional)</h3>
+          <label>Spotify URL</label>
+          <input
+            type="text"
+            value={spotifyUrl}
+            onChange={(e) => setSpotifyUrl(e.target.value)}
+          />
+
+          <label>YouTube URL</label>
+          <input
+            type="text"
+            value={youtubeUrl}
+            onChange={(e) => setYoutubeUrl(e.target.value)}
+          />
+
+          <label>Apple Music URL</label>
+          <input
+            type="text"
+            value={appleUrl}
+            onChange={(e) => setAppleUrl(e.target.value)}
+          />
+        </div>
+
+        {/* 🔹 File Uploads */}
+        <div
+          style={{
+            padding: "10px",
+            backgroundColor: "#222",
+            borderRadius: "8px",
+          }}
+        >
+          <h3 style={{ color: "#ffb300" }}>Upload Files</h3>
+          <label>Song File</label>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            required
+          />
+
+          <label>Artwork</label>
+          <input
+            type="file"
+            onChange={(e) => setArtwork(e.target.files?.[0] || null)}
+            required
+          />
+        </div>
+
+        {/* 🔹 Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: "10px",
+            fontSize: "16px",
+            backgroundColor: "#ff6600",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
           {loading ? "Uploading..." : "Upload"}
         </button>
       </form>
 
-      {/* ✅ Loading Spinner */}
+      {/* 🔹 Loading Spinner */}
       {loading && (
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "10px", textAlign: "center" }}>
           <p>Uploading...</p>
           <BeatLoader color="#ffb300" />
         </div>
       )}
 
-      {/* ✅ Success Message */}
+      {/* 🔹 Success Message */}
       {successMessage && (
         <p
           style={{
             color: successMessage.includes("failed") ? "red" : "green",
             marginTop: "10px",
+            textAlign: "center",
+            fontWeight: "bold",
           }}
         >
           {successMessage}
         </p>
       )}
-
-      {/* {uploadResponse && (
-        <div>
-          <p>Uploaded Song:</p>
-          {songTitle} - {artist} <br />
-          <strong>Genres:</strong> {selectedGenres.join(", ")}
-        </div>
-      )} */}
     </div>
   );
 }

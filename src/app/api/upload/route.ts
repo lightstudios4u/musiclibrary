@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
     const spotifyUrl = formData.get("spotifyUrl") as string;
     const youtubeUrl = formData.get("youtubeUrl") as string;
     const appleUrl = formData.get("appleUrl") as string;
+    const user_id = formData.get("user_id") as string;
 
     //Check if artist exists
     const [existingArtists] = await pool.query<any[]>(
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     // ✅ Insert song metadata into MySQL database
     await pool.query(
-      "INSERT INTO songs (title, artist, url, artwork_url, genres, tempo, song_key, spotify_url, apple_url, youtube_url, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO songs (title, artist, url, artwork_url, genres, tempo, song_key, spotify_url, apple_url, youtube_url, artist_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         title,
         artist,
@@ -81,7 +82,8 @@ export async function POST(req: NextRequest) {
         spotifyUrl,
         appleUrl,
         youtubeUrl,
-        artist_id, // ✅ Now matches the column count
+        artist_id,
+        user_id,
       ]
     );
 

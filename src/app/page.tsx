@@ -6,10 +6,10 @@ import FetchedSongs from "./components/FetchedSongs";
 import { useSongStore } from "../lib/songStore";
 
 export default function Home() {
-  const { fetchSongs } = useSongStore();
+  const { fetchSongs, songs } = useSongStore();
   useEffect(() => {
-    fetchSongs();
-  }, [fetchSongs]);
+    if (songs.length === 0) fetchSongs();
+  }, [songs]);
 
   return (
     <main className={styles.main}>

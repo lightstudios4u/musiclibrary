@@ -54,7 +54,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (!res.ok) return data.error; // Return error message
 
       localStorage.setItem("token", data.token); // ✅ Store token in localStorage
-
       set({ token: data.token, user: data.user, isLoggedIn: true });
       return null; // ✅ No error, login successful
     } catch (error) {
@@ -63,8 +62,21 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  logout: () => {
-    localStorage.removeItem("token"); // ✅ Clear token
-    set({ token: null, user: null, isLoggedIn: false });
+  logout: async () => {
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        localStorage.removeItem("token"); // ✅ Clear token
+        set({ token: null, user: null, isLoggedIn: false });
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error logging out", error);
+    }
   },
 }));

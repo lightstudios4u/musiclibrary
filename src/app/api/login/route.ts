@@ -7,19 +7,27 @@ const SECRET_KEY = process.env.JWT_SECRET!; // Store in .env
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const body = await req.json();
+    console.log("Received Login Payload:", body); // ✅ Debug payload
+
+    const { email, password } = body;
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: "Missing email or password" },
+        { status: 400 }
+      );
+    }
 
     const [rows]: any = await pool.query(
       "SELECT * FROM users WHERE email = ?",
       [email]
     );
-
+    console.log(rows);
     if (rows.length === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const user = rows[0];
-
     // Check password
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
