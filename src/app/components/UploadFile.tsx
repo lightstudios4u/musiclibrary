@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { genres } from "../../lib/metadata"; // Import the genres array
 import { BeatLoader } from "react-spinners";
-import { useAuthStore } from "@/lib/authStore";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);

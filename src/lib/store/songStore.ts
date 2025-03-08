@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { Song } from "./types";
+import { Song } from "../types";
 
 interface SongState {
   songs: Song[];
   fetchSongs: () => Promise<void>;
-  vote: (song_id: number, vote: number) => void;
+  vote: (song_id: number, vote: number, user_id: number) => void;
   deleteSong: (song_id: number) => Promise<void>; // ✅ Add delete function
 }
 
@@ -21,7 +21,7 @@ export const useSongStore = create<SongState>((set) => ({
     }
   },
 
-  vote: async (song_id, vote) => {
+  vote: async (song_id, user_id, vote) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -35,7 +35,7 @@ export const useSongStore = create<SongState>((set) => ({
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ song_id, vote }),
+        body: JSON.stringify({ song_id, vote, user_id }),
       });
 
       // ✅ Optimistically update score

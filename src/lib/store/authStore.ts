@@ -1,5 +1,5 @@
 import { create } from "zustand";
-
+import { useUserStore } from "./userStore";
 interface User {
   id: number;
   email: string;
@@ -17,6 +17,7 @@ interface AuthState {
   ) => Promise<string | null>;
   login: (email: string, password: string) => Promise<string | null>;
   logout: () => void;
+  verifyToken: (token: string) => Promise<User | null>; // New function to verify token
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -33,12 +34,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
 
       const data = await res.json();
-      if (!res.ok) return data.error; // Return error message
+      if (!res.ok) return data.error || "Registration failed.";
 
-      return null; // ✅ No error, registration successful
+      return null;
     } catch (error) {
       console.error("Registration Error:", error);
-      return "Registration failed";
+      return "Registration failed.";
     }
   },
 
@@ -51,32 +52,54 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
 
       const data = await res.json();
-      if (!res.ok) return data.error; // Return error message
+      if (!res.ok) return data.error || "Login failed.";
 
-      localStorage.setItem("token", data.token); // ✅ Store token in localStorage
       set({ token: data.token, user: data.user, isLoggedIn: true });
-      return null; // ✅ No error, login successful
+      return null;
     } catch (error) {
       console.error("Login Error:", error);
-      return "Login failed";
+      return "Login failed.";
     }
   },
 
-  logout: async () => {
+  logout: () => {
+    set({ token: null, user: null, isLoggedIn: false });
+    useUserStore.getState().clearUserData(); // Clear user data on logout.
+  },
+
+  verifyToken: async (token) => {
     try {
-      const response = await fetch("/api/logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch("/api/verify", {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.ok) {
-        localStorage.removeItem("token"); // ✅ Clear token
-        set({ token: null, user: null, isLoggedIn: false });
-      } else {
-        console.error("Logout failed");
+      if (!res.ok) {
+        return null; // Token invalid
       }
+
+      const user: User = await res.json();
+      set({ user: user, token: token, isLoggedIn: true });
+      return user;
     } catch (error) {
-      console.error("Error logging out", error);
+      console.error("Token verification error:", error);
+      return null;
     }
   },
 }));
+
+import { useEffect } from "react";
+
+export function useSyncAuth() {
+  const { verifyToken } = useAuthStore();
+
+  useEffect(() => {
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+
+    if (token) {
+      verifyToken(token); // Verify token against backend
+    }
+  }, [verifyToken]);
+}

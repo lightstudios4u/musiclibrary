@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import styles from "./page.module.css";
 import "./style/main.css";
 import FetchedSongs from "./components/FetchedSongs";
-import { useSongStore } from "../lib/songStore";
+import { useSongStore } from "../lib/store/songStore";
 
 export default function Home() {
   const { fetchSongs, songs } = useSongStore();

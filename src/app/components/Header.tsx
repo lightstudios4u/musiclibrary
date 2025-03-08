@@ -2,7 +2,7 @@
 import React from "react";
 import "../style/main.css";
 import Link from "next/link";
-import { useAuthStore } from "@/lib/authStore";
+import { useAuthStore } from "@/lib/store/authStore";
 
 function Header() {
   const { logout, isLoggedIn, user } = useAuthStore();

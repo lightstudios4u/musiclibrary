@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useAuthStore } from "../../lib/authStore";
+import { useAuthStore } from "../../lib/store/authStore";
 import { useRouter } from "next/navigation";
 
 export default function Register() {

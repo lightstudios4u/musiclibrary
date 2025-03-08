@@ -13,8 +13,9 @@ import { FaSpotify } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import CampaignIcon from "@mui/icons-material/Campaign";
-import { useSongStore } from "../../lib/songStore";
-import { useAuthStore } from "@/lib/authStore";
+import { useSongStore } from "../../lib/store/songStore";
+import { useAuthStore } from "@/lib/store/authStore";
+import { useUserStore } from "@/lib/store/userStore";
 
 import { useRouter } from "next/navigation";
 
@@ -25,19 +26,9 @@ export default function FetchedSongs() {
   const [songIdToDelete, setSongIdToDelete] = useState<number | null>(null);
   const { songs, deleteSong, vote } = useSongStore();
   const { user, isLoggedIn } = useAuthStore();
+  const { likedTracks, likeTrack } = useUserStore();
 
   const router = useRouter();
-
-  // useEffect(() => {
-  //   const fetchSongs = () => {
-  //     fetch("/api/songs")
-  //       .then((res) => res.json())
-  //       .then((data) => setSongs(data))
-  //       .catch((error) => console.error("Error fetching songs:", error));
-  //   };
-
-  //   fetchSongs();
-  // }, [refresh]);
 
   return (
     <div className="maincontainer">
@@ -147,7 +138,7 @@ export default function FetchedSongs() {
                     fontSize: "60px",
                   }}
                   className="upvote"
-                  onClick={() => vote(song.id, 1)}
+                  onClick={() => vote(song.id, user?.id as number, 1)}
                 />
                 <p className="votecount">0</p>
                 <ArrowDropDownIcon
@@ -157,7 +148,7 @@ export default function FetchedSongs() {
                     fontSize: "60px",
                   }}
                   className="downvote"
-                  onClick={() => vote(song.id, -1)}
+                  onClick={() => vote(song.id, user?.id as number, -1)}
                 />
               </div>
 
@@ -241,7 +232,9 @@ export default function FetchedSongs() {
                   fontSize: "13px",
                 }}
               >
-                <FavoriteBorderIcon />
+                <a onClick={() => likeTrack(song.id)}>
+                  <FavoriteBorderIcon />
+                </a>
                 <PlaylistAddIcon />
                 <DownloadIcon />
               </div>
