@@ -35,7 +35,7 @@ export default function Login() {
 
   return (
     <div className="modalcontainer">
-      <div className="modal">
+      <div className="loginmodal">
         <form
           onSubmit={handleLogin}
           style={{ display: "flex", flexDirection: "column", gap: "1rem" }}

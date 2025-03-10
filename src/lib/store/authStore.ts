@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { useUserStore } from "./userStore";
+
 interface User {
   id: number;
   email: string;
@@ -7,6 +7,7 @@ interface User {
 }
 
 interface AuthState {
+  isLoading: boolean; // ✅ Start with loading true
   token: string | null;
   user: User | null;
   isLoggedIn: boolean;
@@ -24,6 +25,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   user: null,
   isLoggedIn: false,
+  isLoading: true, // ✅ Start as true to prevent flashing
 
   register: async (email, username, password) => {
     try {
@@ -35,7 +37,6 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const data = await res.json();
       if (!res.ok) return data.error || "Registration failed.";
-
       return null;
     } catch (error) {
       console.error("Registration Error:", error);
@@ -54,7 +55,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       const data = await res.json();
       if (!res.ok) return data.error || "Login failed.";
 
-      set({ token: data.token, user: data.user, isLoggedIn: true });
+      set({
+        token: data.token,
+        user: data.user,
+        isLoggedIn: true,
+        isLoading: false,
+      });
+
       return null;
     } catch (error) {
       console.error("Login Error:", error);
@@ -62,26 +69,52 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  logout: () => {
-    set({ token: null, user: null, isLoggedIn: false });
-    useUserStore.getState().clearUserData(); // Clear user data on logout.
+  logout: async () => {
+    try {
+      const res = await fetch("/api/logout", { method: "POST" });
+
+      if (res.ok) {
+        document.cookie =
+          "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"; // ✅ Clear token cookie
+
+        set({
+          token: null,
+          user: null,
+          isLoggedIn: false,
+          isLoading: false,
+        });
+      } else {
+        console.error("Failed to log out");
+      }
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
   },
 
   verifyToken: async (token) => {
     try {
       const res = await fetch("/api/verify", {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
+        credentials: "include", // ✅ Include cookies in the request
       });
-
       if (!res.ok) {
-        return null; // Token invalid
+        set({ isLoading: false, isLoggedIn: false });
+        return null;
       }
 
       const user: User = await res.json();
-      set({ user: user, token: token, isLoggedIn: true });
+      set({
+        user: user,
+        token: token,
+        isLoggedIn: true,
+        isLoading: false,
+      });
+
       return user;
     } catch (error) {
       console.error("Token verification error:", error);
+      set({ isLoading: false, isLoggedIn: false });
       return null;
     }
   },
@@ -99,7 +132,13 @@ export function useSyncAuth() {
     );
 
     if (token) {
-      verifyToken(token); // Verify token against backend
+      console.log("usesyncauth");
+      verifyToken(token).catch(() => {
+        // ✅ Ensure loading state is updated even if token verification fails
+        useAuthStore.setState({ isLoading: false, isLoggedIn: false });
+      });
+    } else {
+      useAuthStore.setState({ isLoading: false, isLoggedIn: false });
     }
   }, [verifyToken]);
 }

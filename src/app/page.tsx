@@ -4,8 +4,10 @@ import styles from "./page.module.css";
 import "./style/main.css";
 import FetchedSongs from "./components/FetchedSongs";
 import { useSongStore } from "../lib/store/songStore";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function Home() {
+  const { isLoading } = useAuthStore();
   const { fetchSongs, songs } = useSongStore();
   useEffect(() => {
     if (songs.length === 0) fetchSongs();
@@ -13,7 +15,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <FetchedSongs />
+      {isLoading ? <p>Loading...</p> : <FetchedSongs />}
     </main>
   );
 }

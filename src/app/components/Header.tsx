@@ -3,22 +3,31 @@ import React from "react";
 import "../style/main.css";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
+import Image from "next/image";
+import ProfileMenu from "./ProfileMenu";
 
 function Header() {
-  const { logout, isLoggedIn, user } = useAuthStore();
+  const { isLoggedIn } = useAuthStore();
   return (
     <div className="headercontainer">
       <Link href="/">
-        <p>Indie Share</p>
+        <Image
+          alt="Indie Share"
+          src="/imgs/logo.png"
+          width={100}
+          height={50}
+          style={{ width: "100%", height: "auto ", borderRadius: "4px" }}
+        />
       </Link>
       {isLoggedIn && (
         <div>
-          {<p>{user?.username}</p>}
+          {/* {<p>{user?.username}</p>}
           <Link href="/upload">
             <p>Upload</p>
           </Link>
 
-          <button onClick={logout}>Logout</button>
+          <button onClick={logout}>Logout</button> */}
+          <ProfileMenu />
         </div>
       )}
       {!isLoggedIn && (

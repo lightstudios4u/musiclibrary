@@ -144,16 +144,25 @@
   align-items: center;
   justify-content: center;
 }
+
 .modalcontainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  /* Ensure it covers the entire screen */
   background-color: #0000008e;
   color: #ffffff;
   width: 100vw;
   height: 100vh;
-  position: absolute;
+
+  /* Stay fixed to the top of the viewport */
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  /* High z-index to stay above other content */
   z-index: 1000 !important;
 }
 
@@ -163,7 +172,16 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 25%;
+  width: 30%;
+}
+
+.loginmodal {
+  background-color: #222222;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 30%;
 }
 
 .standardinput {
@@ -191,4 +209,61 @@
 
 .altbutton {
   background-color: #ff6600;
+}
+
+.page-template {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header h1 {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.creator,
+.description {
+  font-size: 16px;
+  color: #666;
+}
+
+.content {
+  margin-top: 16px;
+}
+
+.comments-section {
+  margin-top: 24px;
+  border-top: 1px solid #ddd;
+  padding-top: 16px;
+}
+
+.comment {
+  margin-bottom: 12px;
+}
+
+.comment strong {
+  color: #333;
+}
+
+.related-items {
+  margin-top: 24px;
+}
+
+.related-items ul {
+  padding: 0;
+  list-style: none;
+}
+
+.related-items li {
+  margin-bottom: 8px;
+}
+
+.related-items a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.related-items a:hover {
+  text-decoration: underline;
 }

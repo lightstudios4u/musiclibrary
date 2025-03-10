@@ -16,37 +16,35 @@ import CampaignIcon from "@mui/icons-material/Campaign";
 import { useSongStore } from "../../lib/store/songStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useUserStore } from "@/lib/store/userStore";
-
 import { useRouter } from "next/navigation";
 
 export default function FetchedSongs() {
-  const [refresh, setRefresh] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [songIdToDelete, setSongIdToDelete] = useState<number | null>(null);
   const { songs, deleteSong, vote } = useSongStore();
   const { user, isLoggedIn } = useAuthStore();
-  const { likedTracks, likeTrack } = useUserStore();
+  const { likeTrack } = useUserStore();
 
   const router = useRouter();
+  const landingimgsrc = "/imgs/landingimg.webp";
 
   return (
     <div className="maincontainer">
       {showModal && initialLoad && !isLoggedIn && (
         <div className="modalcontainer">
           <div className="modal">
-            <h1>Welcome to the Indie Share!</h1>
             <div>
-              <div
+              <Image
+                alt="Indie Share"
+                src={landingimgsrc}
+                width={900}
+                height={506}
                 style={{
-                  color: "orange",
-                  display: "flex",
-                  alignItems: "center",
+                  width: "100%",
+                  height: "auto ",
+                  borderRadius: "4px",
                 }}
-              >
-                Get your music heard
-                <CampaignIcon style={{ marginLeft: "7px" }} />
-              </div>
+              />
               <br />
               <br />
               - Upload your music
@@ -60,7 +58,11 @@ export default function FetchedSongs() {
             </div>
             <br />
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+              }}
             >
               <button
                 className="standardbutton "
