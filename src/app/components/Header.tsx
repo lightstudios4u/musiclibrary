@@ -7,7 +7,7 @@ import Image from "next/image";
 import ProfileMenu from "./ProfileMenu";
 
 function Header() {
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, isLoading } = useAuthStore();
   return (
     <div className="headercontainer">
       <Link href="/">
@@ -30,7 +30,7 @@ function Header() {
           <ProfileMenu />
         </div>
       )}
-      {!isLoggedIn && (
+      {!isLoggedIn && !isLoading && (
         <div style={{ display: "flex", gap: "1rem" }}>
           <Link href="/login">
             <p>Login</p>

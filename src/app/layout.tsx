@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
+import { getSession } from "../lib/auth";
+import jwt from "jsonwebtoken";
+import { useAuthStore } from "@/lib/store/authStore";
 import ClientAuthWrapper from "./components/ClientAuthWrapper";
 
 const geistSans = Geist({
@@ -19,7 +22,7 @@ export const metadata: Metadata = {
   description: "Get your music heard.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -33,3 +36,6 @@ export default function RootLayout({
     </html>
   );
 }
+// function cookies() {
+//   throw new Error("Function not implemented.");
+// }

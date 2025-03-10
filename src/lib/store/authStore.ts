@@ -120,25 +120,25 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 }));
 
-import { useEffect } from "react";
+// import { useEffect } from "react";
 
-export function useSyncAuth() {
-  const { verifyToken } = useAuthStore();
+// export function useSyncAuth() {
+//   const { verifyToken } = useAuthStore();
 
-  useEffect(() => {
-    const token = document.cookie.replace(
-      /(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
+//   useEffect(() => {
+//     const token = document.cookie.replace(
+//       /(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/,
+//       "$1"
+//     );
 
-    if (token) {
-      console.log("usesyncauth");
-      verifyToken(token).catch(() => {
-        // ✅ Ensure loading state is updated even if token verification fails
-        useAuthStore.setState({ isLoading: false, isLoggedIn: false });
-      });
-    } else {
-      useAuthStore.setState({ isLoading: false, isLoggedIn: false });
-    }
-  }, [verifyToken]);
-}
+//     if (token) {
+//       console.log("usesyncauth");
+//       verifyToken(token).catch(() => {
+//         // ✅ Ensure loading state is updated even if token verification fails
+//         useAuthStore.setState({ isLoading: false, isLoggedIn: false });
+//       });
+//     } else {
+//       useAuthStore.setState({ isLoading: false, isLoggedIn: false });
+//     }
+//   }, [verifyToken]);
+// }

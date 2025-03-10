@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import pool from "../../../lib/db";
+import { useAuthStore } from "@/lib/store/authStore";
 
 const SECRET_KEY = process.env.JWT_SECRET!;
 
@@ -27,7 +28,16 @@ export async function GET(req: NextRequest) {
     }
 
     const user = rows[0];
-
+    useAuthStore.setState({
+      isLoggedIn: true,
+      isLoading: false,
+      user: {
+        id: decoded.user_id,
+        email: user.email, // Assuming you fetched email
+        username: user.username, // Assuming you fetched username
+      },
+      token,
+    });
     return NextResponse.json(user);
   } catch (error) {
     console.error("Token verification error:", error);
