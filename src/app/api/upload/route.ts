@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import s3 from "../../../lib/storage"; // ✅ Ensure this import is correct
-import pool from "../../../lib/db"; // ✅ Ensure correct MySQL connection
+import s3 from "../../../lib/storage"; //  Ensure this import is correct
+import pool from "../../../lib/db"; //  Ensure correct MySQL connection
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,14 +27,14 @@ export async function POST(req: NextRequest) {
     if (existingArtists.length > 0) {
       artist_id = existingArtists[0].id;
     } else {
-      // ✅ Insert new artist
+      //  Insert new artist
       const [artistResult] = await pool.query(
         "INSERT INTO artists (name) VALUES (?)",
         [artist]
       );
       artist_id = (artistResult as any).insertId;
     }
-    // ✅ Validate input
+    // Validate input
     if (!file || !artwork || !title || !artist) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -42,11 +42,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Convert files to Buffers
+    // Convert files to Buffers
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const artworkBuffer = Buffer.from(await artwork.arrayBuffer());
 
-    // ✅ Upload song file to DigitalOcean Spaces
+    // Upload song file to DigitalOcean Spaces
     const songParams = {
       Bucket: process.env.STORAGE_BUCKET!,
       Key: `songs/${file.name}`, // Use timestamp to prevent overwrites
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const songUploadResult = await s3.upload(songParams).promise();
     const songUrl = songUploadResult.Location; // ✅ Get actual uploaded file URL
     console.log(songUrl);
-    // ✅ Upload artwork file to DigitalOcean Spaces
+    // Upload artwork file to DigitalOcean Spaces
     const artworkParams = {
       Bucket: process.env.STORAGE_BUCKET!,
       Key: `artwork/${Date.now()}-${artwork.name}`, // Use timestamp to prevent overwrites
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     const artworkUploadResult = await s3.upload(artworkParams).promise();
     const artworkUrl = artworkUploadResult.Location; // ✅ Get actual uploaded file URL
 
-    // ✅ Insert song metadata into MySQL database
+    // Insert song metadata into MySQL database
     await pool.query(
       "INSERT INTO songs (title, artist, url, artwork_url, genres, tempo, song_key, spotify_url, apple_url, youtube_url, artist_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [

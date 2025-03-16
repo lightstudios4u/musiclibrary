@@ -9,7 +9,6 @@ export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
 
-    // ✅ Find user in database
     const [rows]: any = await pool.query(
       "SELECT * FROM users WHERE email = ?",
       [email]
@@ -21,7 +20,6 @@ export async function POST(req: NextRequest) {
 
     const user = rows[0];
 
-    // ✅ Check password
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return NextResponse.json(
@@ -30,21 +28,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Generate JWT
     const token = jwt.sign({ user_id: user.id }, SECRET_KEY, {
       expiresIn: "7d",
     });
 
-    // ✅ Set token in HTTP-only cookie
     const response = NextResponse.json({
-      user: { id: user.id, username: user.username, email: user.email },
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        likedTracks: user.liked_songs,
+      },
     });
+    console.log(user);
 
     response.headers.set(
       "Set-Cookie",
       `token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`
     );
-
     return response;
   } catch (error) {
     console.error("Login Error:", error);

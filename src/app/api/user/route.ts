@@ -6,7 +6,7 @@ const SECRET_KEY = process.env.JWT_SECRET!;
 
 export async function GET(req: NextRequest) {
   try {
-    // ✅ Get token from headers
+    // Get token from headers
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return NextResponse.json(
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Token missing" }, { status: 401 });
     }
 
-    // ✅ Verify token and extract user ID
+    // Verify token and extract user ID
     let userId;
     try {
       const decoded = jwt.verify(token, SECRET_KEY) as { user_id: number };
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    // ✅ Fetch user data
+    // Fetch user data
     const [userRows]: any = await pool.query(
       `SELECT id, username, email FROM users WHERE id = ?`,
       [userId]
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
     const user = userRows[0];
 
-    // ✅ Fetch liked tracks
+    // Fetch liked tracks
     const [likedTracksRows]: any = await pool.query(
       `SELECT songs.* FROM songs 
        JOIN votes ON songs.id = votes.song_id 

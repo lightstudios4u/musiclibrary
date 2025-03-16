@@ -47,4 +47,8 @@ export interface User {
   email: string;
   password_hash: string;
   created_at: Date;
+  token: string | null;
+  likedTracks: number[];
+  profile_image: string | null;
+  bio: string | null;
 }

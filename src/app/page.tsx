@@ -9,8 +9,6 @@ import { useSongStore } from "../lib/store/songStore";
 import { useAuthStore } from "@/lib/store/authStore";
 
 export default function Home() {
-  const SECRET_KEY = process.env.JWT_SECRET!;
-
   const { isLoading } = useAuthStore();
 
   const { fetchSongs, songs } = useSongStore();

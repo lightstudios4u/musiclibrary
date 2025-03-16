@@ -100,6 +100,52 @@
   display: none !important;
 }
 
+/* profile page */
+.profilecontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  background-color: #0094e31f;
+  color: #ffffff;
+  padding: 20px;
+  width: 70%;
+  margin: auto;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+/* profile page header */
+.profileheader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #008cff31;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 4px;
+  gap: 5px;
+}
+
+.profileheaderitem {
+  display: flex;
+  width: fit-content;
+  width: 30%;
+}
+
+.bioedit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #008cff31;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 4px;
+  width: 100%;
+}
+
 /* vote container */
 .votecontainer {
   display: flex;
@@ -137,12 +183,14 @@
   width: 100%;
 }
 
-.maincontainer {
+.tracklistcontainer {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  padding: 20px;
 }
 
 .modalcontainer {
@@ -182,6 +230,8 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 30%;
+  max-width: 475px;
+  min-width: 300px;
 }
 
 .standardinput {
@@ -266,4 +316,16 @@
 
 .related-items a:hover {
   text-decoration: underline;
+}
+
+.spotifystreaminglink:hover {
+  color: #0ba100 !important;
+}
+
+.applestreaminglink:hover {
+  color: #bf326f !important;
+}
+
+.youtubestreaminglink:hover {
+  color: #ff0000 !important;
 }

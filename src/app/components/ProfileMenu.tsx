@@ -8,8 +8,10 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Settings from "@mui/icons-material/Settings";
+import Upload from "@mui/icons-material/Upload";
 import Logout from "@mui/icons-material/Logout";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useRouter } from "next/navigation";
 
 export default function ProfileMenu() {
   const { logout, user } = useAuthStore();
@@ -25,6 +27,7 @@ export default function ProfileMenu() {
   };
 
   const open = Boolean(anchorEl);
+  const router = useRouter();
 
   return (
     <React.Fragment>
@@ -96,9 +99,9 @@ export default function ProfileMenu() {
               marginTop: "5px",
             }}
           >
-            {user?.username}
+            <strong> {user?.username}</strong>
           </p>
-          <MenuItem onClick={handleMouseLeave}>Profile</MenuItem>
+          <MenuItem onClick={() => router.push("/profile")}>Profile</MenuItem>
           <MenuItem onClick={handleMouseLeave}>My account</MenuItem>
           <Divider />
 
@@ -107,6 +110,12 @@ export default function ProfileMenu() {
               <Settings fontSize="small" />
             </ListItemIcon>
             Settings
+          </MenuItem>
+          <MenuItem onClick={() => router.push("/upload")}>
+            <ListItemIcon>
+              <Upload fontSize="small" />
+            </ListItemIcon>
+            Upload
           </MenuItem>
           <MenuItem onClick={logout}>
             <ListItemIcon>

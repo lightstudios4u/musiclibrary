@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { genres } from "../../lib/metadata"; // Import the genres array
 import { BeatLoader } from "react-spinners";
 import { useAuthStore } from "@/lib/store/authStore";
+import { Upload } from "@mui/icons-material";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -64,14 +65,13 @@ export default function UploadPage() {
       return;
     }
 
-    setLoading(true); // ✅ Show loading spinner
-
+    setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("artwork", artwork);
     formData.append("title", songTitle);
     formData.append("artist", artist);
-    formData.append("genres", selectedGenres.join(", ")); // ✅ Store genres as a comma-separated string
+    formData.append("genres", selectedGenres.join(", ")); //  Store genres as a comma-separated string
     formData.append("tempo", tempo.toString());
     formData.append("key", key);
     formData.append("spotifyUrl", spotifyUrl);
@@ -87,9 +87,9 @@ export default function UploadPage() {
 
       //   const data = await res.json();
       //   setUploadResponse(data);
-      setSuccessMessage("🎉 Upload Successful!"); // ✅ Show success message
+      setSuccessMessage("🎉 Upload Successful!"); // Show success message
 
-      // ✅ Clear inputs after upload
+      // Clear inputs after upload
       setFile(null);
       setArtwork(null);
       setSongTitle("");
@@ -105,32 +105,39 @@ export default function UploadPage() {
       if (artworkInputRef.current) artworkInputRef.current.value = "";
     } catch (error) {
       console.error("Error uploading file:", error);
-      setSuccessMessage("❌ Upload failed. Please try again.");
+      setSuccessMessage("Upload failed. Please try again.");
     } finally {
-      setLoading(false); // ✅ Hide loading spinner
+      setLoading(false); // Hide loading spinner
     }
   };
 
   return (
     <div
       style={{
-        maxWidth: "600px",
+        maxWidth: "1200px",
         margin: "auto",
         padding: "20px",
         borderRadius: "10px",
         backgroundColor: "#111", // Deep black background
         color: "white", // White text for contrast
+        width: "45%",
+        position: "relative",
       }}
     >
-      <h1
-        style={{ textAlign: "center", marginBottom: "20px", color: "#ffb300" }}
-      >
+      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
         Upload a Song
       </h1>
 
       <form
         onSubmit={handleUpload}
-        style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1.5rem",
+        }}
       >
         {/* 🔹 Basic Information */}
         <div
@@ -138,9 +145,10 @@ export default function UploadPage() {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            padding: "10px",
+            padding: "20px",
             backgroundColor: "#222",
             borderRadius: "8px",
+            width: "90%",
           }}
         >
           <h3 style={{ color: "#ffb300" }}>Song Information</h3>
@@ -183,9 +191,12 @@ export default function UploadPage() {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            padding: "10px",
+            padding: "20px",
             backgroundColor: "#222",
             borderRadius: "8px",
+            maxWidth: "500px",
+            width: "90%",
+            position: "relative",
           }}
         >
           <h3 style={{ color: "#ffb300" }}>Genres</h3>
@@ -214,6 +225,9 @@ export default function UploadPage() {
                 overflowY: "auto",
                 backgroundColor: "#222",
                 borderRadius: "5px",
+                position: "absolute",
+                top: "50%",
+                zIndex: 4,
               }}
             >
               {filteredGenres.map((g) => (
@@ -266,9 +280,10 @@ export default function UploadPage() {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            padding: "10px",
+            padding: "20px",
             backgroundColor: "#222",
             borderRadius: "8px",
+            width: "90%",
           }}
         >
           <h3 style={{ color: "#ffb300" }}>Song Details</h3>
@@ -306,9 +321,14 @@ export default function UploadPage() {
         {/* 🔹 Streaming Links */}
         <div
           style={{
-            padding: "10px",
+            padding: "20px",
             backgroundColor: "#222",
             borderRadius: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            maxWidth: "500px",
+            width: "90%",
           }}
         >
           <h3 style={{ color: "#ffb300" }}>Streaming Links (Optional)</h3>
@@ -319,27 +339,31 @@ export default function UploadPage() {
             onChange={(e) => setSpotifyUrl(e.target.value)}
           />
 
-          <label>YouTube URL</label>
-          <input
-            type="text"
-            value={youtubeUrl}
-            onChange={(e) => setYoutubeUrl(e.target.value)}
-          />
-
           <label>Apple Music URL</label>
           <input
             type="text"
             value={appleUrl}
             onChange={(e) => setAppleUrl(e.target.value)}
           />
+          <label>YouTube URL</label>
+          <input
+            type="text"
+            value={youtubeUrl}
+            onChange={(e) => setYoutubeUrl(e.target.value)}
+          />
         </div>
 
         {/* 🔹 File Uploads */}
         <div
           style={{
-            padding: "10px",
+            padding: "20px",
             backgroundColor: "#222",
             borderRadius: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            maxWidth: "500px",
+            width: "90%",
           }}
         >
           <h3 style={{ color: "#ffb300" }}>Upload Files</h3>
@@ -365,14 +389,17 @@ export default function UploadPage() {
           style={{
             padding: "10px",
             fontSize: "16px",
-            backgroundColor: "#ff6600",
+            backgroundColor: "green",
             color: "#fff",
             border: "none",
             borderRadius: "5px",
             cursor: "pointer",
             fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
           }}
         >
+          <Upload style={{ marginRight: "5px" }} />
           {loading ? "Uploading..." : "Upload"}
         </button>
       </form>

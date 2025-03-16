@@ -1,46 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import pool from "../../../lib/db";
-import { useAuthStore } from "@/lib/store/authStore";
 
 const SECRET_KEY = process.env.JWT_SECRET!;
 
 export async function GET(req: NextRequest) {
   try {
-    console.log("verifying token...");
-    // ✅ Read token from cookie
+    console.log("🔎 Verifying token...");
+
     const token = req.cookies.get("token")?.value;
     if (!token) {
+      console.warn("❌ No token found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ Verify token
-    const decoded = jwt.verify(token, SECRET_KEY) as { user_id: number };
+    let decoded;
+    try {
+      decoded = jwt.verify(token, SECRET_KEY) as { user_id: number };
+    } catch (err) {
+      console.error("❌ Token verification failed:", err);
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    console.log("✅ Token verified:", decoded);
+
     const [rows]: any = await pool.query(
       "SELECT id, email, username FROM users WHERE id = ?",
       [decoded.user_id]
     );
 
     if (rows.length === 0) {
+      console.warn("❌ User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const user = rows[0];
-    useAuthStore.setState({
-      isLoggedIn: true,
-      isLoading: false,
-      user: {
-        id: decoded.user_id,
-        email: user.email, // Assuming you fetched email
-        username: user.username, // Assuming you fetched username
-      },
-      token,
+    console.log("✅ User found:", user);
+
+    return NextResponse.json({
+      id: user.id,
+      email: user.email,
+      username: user.username,
     });
-    return NextResponse.json(user);
   } catch (error) {
-    console.error("Token verification error:", error);
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    console.error("❌ Server error:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
