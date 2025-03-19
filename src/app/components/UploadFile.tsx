@@ -4,6 +4,7 @@ import { genres } from "../../lib/metadata"; // Import the genres array
 import { BeatLoader } from "react-spinners";
 import { useAuthStore } from "@/lib/store/authStore";
 import { Upload } from "@mui/icons-material";
+import { useSongStore } from "@/lib/store/songStore";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -18,14 +19,11 @@ export default function UploadPage() {
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [appleUrl, setAppleUrl] = useState("");
   const { user } = useAuthStore();
+  const { fetchSongs } = useSongStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const artworkInputRef = useRef<HTMLInputElement>(null);
 
-  //   const [uploadResponse, setUploadResponse] = useState<{
-  //     songUrl: string;
-  //     artworkUrl: string;
-  //   } | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
 
@@ -87,6 +85,7 @@ export default function UploadPage() {
 
       //   const data = await res.json();
       //   setUploadResponse(data);
+      fetchSongs();
       setSuccessMessage("🎉 Upload Successful!"); // Show success message
 
       // Clear inputs after upload

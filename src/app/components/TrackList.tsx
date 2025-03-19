@@ -9,6 +9,7 @@ interface TrackListProps {
   onDelete: (songId: number) => void;
   userId?: number;
   showVote?: boolean; // Optional prop to control vote visibility
+  showSave?: boolean; // Optional prop to control save visibility
 }
 
 export default function TrackList({
@@ -17,6 +18,7 @@ export default function TrackList({
   onDelete,
   userId,
   showVote, // Default to true if not provided
+  showSave, // Default to true if not provided
 }: TrackListProps) {
   return (
     <div
@@ -53,6 +55,7 @@ export default function TrackList({
               onVote={(songId, value) => onVote(songId, value)}
               onDelete={(songId) => onDelete(songId)}
               showVote={showVote} // Pass the showVote prop to Track component
+              showSave={showSave} // Show save button by default
             />
           </li>
         ))}

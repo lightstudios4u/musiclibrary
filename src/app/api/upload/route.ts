@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     const artworkUploadResult = await s3.upload(artworkParams).promise();
     const artworkUrl = artworkUploadResult.Location; // ✅ Get actual uploaded file URL
-
+    console.log(artworkUrl);
     // Insert song metadata into MySQL database
     await pool.query(
       "INSERT INTO songs (title, artist, url, artwork_url, genres, tempo, song_key, spotify_url, apple_url, youtube_url, artist_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

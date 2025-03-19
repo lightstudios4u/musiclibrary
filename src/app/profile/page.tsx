@@ -7,6 +7,7 @@ import TrackList from "../components/TrackList";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { profile } from "console";
+import { useNotifyStore } from "@/lib/store/notifyStore";
 
 function Page() {
   const bio = useAuthStore((state) => state.bio);
@@ -22,12 +23,10 @@ function Page() {
   const [previewImage, setPreviewImage] = useState<string | null>(
     profile_image || "/imgs/landingimg.png"
   );
-
-  const setBio = useAuthStore((state) => state.setBio);
   const [newBio, setNewBio] = useState(bio || "");
-
   const likedTracks = useAuthStore((state) => state.likedTracks);
   const { songs, fetchSongs, vote, deleteSong } = useSongStore();
+  const addNotification = useNotifyStore((state) => state.addNotification);
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewBio(e.target.value);
@@ -36,7 +35,8 @@ function Page() {
   const handleSaveBio = async () => {
     try {
       await updateUser({ bio: newBio });
-      alert("Bio updated!");
+      setUpdatingBio(false);
+      addNotification("Bio updated successfully!");
     } catch (error) {
       alert("Failed to update bio.");
     }
@@ -69,13 +69,13 @@ function Page() {
         const updatedUser = await response.json();
         console.log(updatedUser.profile_image);
         setPreviewImage(updatedUser.profile_image || "/imgs/landingimg.png");
-        alert("Profile image updated successfully!");
+        const currentState = useAuthStore.getState();
         setUser(
-          updatedUser,
-          updatedUser.likedTracks,
-          updatedUser.profile_image
+          currentState.user,
+          currentState.likedTracks,
+          updatedUser.profile_image || currentState.profile_image
         );
-        console.log(useAuthStore.getState().profile_image);
+        addNotification("Profile image updated successfully!");
         setUploadingImage(false);
       } else {
         alert("Failed to update profile image.");
@@ -90,6 +90,8 @@ function Page() {
     if (useAuthStore.getState().profile_image) {
       setPreviewImage(profile_image);
     }
+    setNewBio(useAuthStore.getState().bio || "");
+    console.log(newBio);
     if (songs.length === 0) {
       fetchSongs();
     }
@@ -159,7 +161,7 @@ function Page() {
                 <EditIcon fontSize="small" />
               </a>
               <p className="mb-2">Bio:</p>
-              {!updatingBio && <p>{bio || "No bio available"}</p>}
+              {!updatingBio && <p>{newBio || "No bio available"}</p>}
             </div>
             {updatingBio && (
               <div className="bioedit">
@@ -191,6 +193,7 @@ function Page() {
                 onDelete={(songId) => deleteSong(songId)}
                 userId={user?.id as number}
                 showVote={false}
+                showSave={false} // Show save button by default
               />
             </div>
           ) : (

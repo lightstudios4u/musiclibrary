@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import Player from "./Player";
 import Image from "next/image";
@@ -10,14 +8,17 @@ import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { FaSpotify, FaApple, FaYoutube } from "react-icons/fa";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useNotifyStore } from "@/lib/store/notifyStore";
 
 interface SongItemProps {
   song: Song;
   onVote: (songId: number, value: number) => void;
   onDelete: (songId: number) => void;
-  showVote?: boolean; // Optional prop to control vote visibility
+  showVote?: boolean;
+  showSave?: boolean;
 }
 
 export default function Track({
@@ -25,15 +26,35 @@ export default function Track({
   onVote,
   onDelete,
   showVote,
+  showSave,
 }: SongItemProps) {
   const { likeTrack, unlikeTrack, likedTracks } = useAuthStore();
   const [hovered, setHovered] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [pendingUnlike, setPendingUnlike] = useState<number | null>(null);
+  const addNotification = useNotifyStore((state) => state.addNotification);
 
   const handleLike = () => {
     if (likedTracks.includes(song.id)) {
-      unlikeTrack(song.id);
+      setPendingUnlike(song.id);
+      setShowModal(true);
     } else {
       likeTrack(song.id);
+      addNotification(
+        `Added ${song.title} by ${song.artist} to your saved tracks`
+      );
+    }
+  };
+
+  const confirmUnlike = () => {
+    if (pendingUnlike !== null) {
+      unlikeTrack(pendingUnlike);
+      setPendingUnlike(null);
+
+      addNotification(
+        `Removed ${song.title} by ${song.artist} from your saved tracks`
+      );
+      setShowModal(false);
     }
   };
 
@@ -74,6 +95,7 @@ export default function Track({
           />
         </div>
       )}
+
       {/* Artwork */}
       <Image
         src={song.artwork_url}
@@ -114,7 +136,7 @@ export default function Track({
         style={{
           display: "flex",
           flexDirection: "row",
-          flexWrap: "wrap", // ✅ Added back to match original
+          flexWrap: "wrap",
           gap: "1rem",
           width: "120px",
           fontSize: "14px",
@@ -133,6 +155,7 @@ export default function Track({
           <br /> {song.genres}
         </p>
       </div>
+
       {/* Like, Playlist, and Download */}
       <div
         style={{
@@ -142,17 +165,28 @@ export default function Track({
           width: "30px",
         }}
       >
-        <a
-          onClick={handleLike}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-        >
-          {likedTracks.includes(song.id) || hovered ? (
-            <FavoriteIcon style={{ color: "red" }} />
-          ) : (
-            <FavoriteBorderIcon />
-          )}
-        </a>
+        {showSave ? (
+          <a
+            onClick={handleLike}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
+            {likedTracks.includes(song.id) || hovered ? (
+              <FavoriteIcon style={{ color: "red" }} />
+            ) : (
+              <FavoriteBorderIcon />
+            )}
+          </a>
+        ) : (
+          <CancelIcon
+            onClick={() => {
+              setPendingUnlike(song.id);
+              setShowModal(true);
+            }}
+            style={{ color: "white", cursor: "pointer" }}
+          />
+        )}
+
         <PlaylistAddIcon />
         <DownloadIcon />
       </div>
@@ -186,6 +220,73 @@ export default function Track({
         {/* Delete Button */}
         <button onClick={() => onDelete(song.id)}>❌ Delete</button>
       </div>
+
+      {/* Confirmation Modal */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "black",
+              padding: "20px",
+              borderRadius: "8px",
+              width: "300px",
+              textAlign: "center",
+            }}
+          >
+            <p>
+              Are you sure you want to remove{" "}
+              <strong>
+                {song.title} by {song.artist}
+              </strong>{" "}
+              from your saved tracks?
+            </p>
+            <br />
+            <div
+              style={{ display: "flex", justifyContent: "center", gap: "10px" }}
+            >
+              <button
+                onClick={confirmUnlike}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#ff4d4d",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Remove
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#ccc",
+                  color: "black",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

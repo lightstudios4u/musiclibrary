@@ -1,10 +1,9 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+const dotenv = require("dotenv");
+dotenv.config({ path: ".env.local" });
+const nextConfig = {
   images: {
     domains: ["resonancestorage.sfo2.digitaloceanspaces.com"], // ✅ Allow DigitalOcean Spaces
   },
-  /* config options here */
 };
 
 export default nextConfig;

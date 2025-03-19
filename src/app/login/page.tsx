@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../../lib/store/authStore";
 import { useRouter } from "next/navigation";
+import { useNotifyStore } from "@/lib/store/notifyStore";
 
 function page() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ function page() {
   const [error, setError] = useState("");
   const { login } = useAuthStore();
   const router = useRouter();
+  const addNotification = useNotifyStore((state) => state.addNotification);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +24,7 @@ function page() {
         setError(errorMessage);
         return;
       }
-
+      addNotification("Logging in (" + email + ")");
       setSuccess(true); // ✅ Show success message
       setTimeout(() => {
         router.push("/"); // ✅ Redirect after delay

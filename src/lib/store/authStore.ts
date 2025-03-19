@@ -108,8 +108,7 @@ export const useAuthStore = create<AuthState>()(
 
           const data = await res.json();
           if (!res.ok) return data.error || "Login failed.";
-          console.log(data.user);
-          // ✅ Parse liked tracks from comma-separated string
+
           const likedTracks = data.user.likedTracks
             ? data.user.likedTracks.split(",").map(Number)
             : [];
@@ -123,6 +122,8 @@ export const useAuthStore = create<AuthState>()(
             likedTracks: likedTracks,
             isLoggedIn: true,
             isLoading: false,
+            profile_image: data.user.profile_image || "/imgs/landingimg.png",
+            bio: data.user.bio || null,
           });
           console.log(likedTracks);
           return null;
@@ -250,6 +251,7 @@ export const useAuthStore = create<AuthState>()(
         likedTracks: state.likedTracks, // ✅ Persist likedTracks
         isLoggedIn: state.isLoggedIn,
         profile_image: state.profile_image, // ✅ Add profile_image to persisted state
+        bio: state.bio, // ✅ Add bio to persisted state
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

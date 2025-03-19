@@ -7,6 +7,7 @@ import "./style/main.css";
 import FetchedSongs from "./components/FetchedSongs";
 import { useSongStore } from "../lib/store/songStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import Notification from "./components/Notification";
 
 export default function Home() {
   const { isLoading } = useAuthStore();
@@ -19,6 +20,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       {isLoading ? <p>Loading...</p> : <FetchedSongs />}
+      <Notification />
     </main>
   );
 }

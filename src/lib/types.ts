@@ -52,3 +52,16 @@ export interface User {
   profile_image: string | null;
   bio: string | null;
 }
+
+export interface Article {
+  id: number;
+  title: string;
+  content: string;
+  author?: string;
+  publication_date: string;
+  category?: string;
+  tags?: string[];
+  image_url?: string;
+  status?: "draft" | "published";
+  created_at: Date;
+}

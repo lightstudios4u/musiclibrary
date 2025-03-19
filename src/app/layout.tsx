@@ -6,6 +6,8 @@ import { getSession } from "../lib/auth";
 import jwt from "jsonwebtoken";
 import { useAuthStore } from "@/lib/store/authStore";
 import ClientAuthWrapper from "./components/ClientAuthWrapper";
+import Notification from "./components/Notification";
+import ClientOnly from "./components/ClientOnly";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +34,9 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Header />
         <ClientAuthWrapper>{children}</ClientAuthWrapper>
+        <ClientOnly>
+          <Notification />
+        </ClientOnly>
       </body>
     </html>
   );

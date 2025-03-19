@@ -6,6 +6,7 @@ import { useSongStore } from "../../lib/store/songStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
 import TrackList from "./TrackList";
+import { Song } from "../../lib/types";
 
 export default function FetchedSongs() {
   const [showModal, setShowModal] = useState(true);
@@ -13,6 +14,7 @@ export default function FetchedSongs() {
   const { songs, deleteSong, vote } = useSongStore();
   const { user, isLoggedIn, likeTrack, unlikeTrack } = useAuthStore();
   const likedTracks = useAuthStore((state) => state.likedTracks);
+  const [songList, setSongList] = useState<Song[]>(songs);
 
   const router = useRouter();
   const landingimgsrc = "/imgs/landingimg.webp";
@@ -30,6 +32,11 @@ export default function FetchedSongs() {
       alert("Failed to like track. Please try again.");
     }
   };
+
+  useEffect(() => {
+    // ✅ Fetch songs on initial load
+    setSongList(songs);
+  }, [songs]);
 
   return (
     <div className="tracklistcontainer">
@@ -116,10 +123,11 @@ export default function FetchedSongs() {
 
       {/* ✅ Track List */}
       <TrackList
-        tracks={songs}
+        tracks={songList}
         onVote={(songId, value) => vote(songId, user?.id as number, value)}
         onDelete={(songId) => deleteSong(songId)}
         showVote={true} // Show vote buttons
+        showSave={true} // Show save button by default
       />
     </div>
   );
