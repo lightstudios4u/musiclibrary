@@ -59,18 +59,7 @@ export default function Track({
   };
 
   return (
-    <div
-      key={song.id}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-        padding: "1rem",
-        borderRadius: "14px",
-        backgroundColor: "rgba(130, 130, 130, 0.1)",
-        position: "relative",
-      }}
-    >
+    <div key={song.id} className="trackcontainer">
       {/* Voting Section */}
       {showVote && (
         <div className="votecontainer">

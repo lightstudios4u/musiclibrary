@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
 import Image from "next/image";
 import ProfileMenu from "./ProfileMenu";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 
 function Header() {
   const { isLoggedIn, isLoading } = useAuthStore();
@@ -13,12 +14,17 @@ function Header() {
       <Link href="/">
         <Image
           alt="Indie Share"
-          src="/imgs/logo.png"
+          src="/imgs/bwavemusic2.png"
           width={100}
           height={50}
           style={{ width: "100%", height: "auto ", borderRadius: "4px" }}
         />
       </Link>
+      <div className="searchcontainer">
+        <input type="text" className="headersearch" placeholder="Search..." />
+        <FaMagnifyingGlass className="searchicon" />
+      </div>
+
       {isLoggedIn && (
         <div>
           {/* {<p>{user?.username}</p>}

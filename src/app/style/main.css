@@ -229,10 +229,41 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #222222;
+  padding-right: 20px;
+  padding-left: 20px;
+  background-color: #000000;
   color: #ffffff;
   width: 100%;
+  border-bottom: #ffffff0f 1px solid;
+}
+
+.searchcontainer {
+  position: relative;
+  width: 35%; /* adjust as needed */
+}
+
+.headersearch {
+  width: 100%;
+  padding: 8px 12px 8px 36px; /* padding-left for icon space */
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 40px;
+}
+
+.searchicon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none; /* so it doesn't block clicking in the input */
+}
+
+.headeractionitem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
 }
 
 .tracklistcontainer {
@@ -242,7 +273,45 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+.trackcontainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   padding: 20px;
+  background-color: rgba(130, 130, 130, 0);
+  position: relative;
+  border: 1px solid #ffffff08;
+}
+
+.tracklistwrapper {
+  height: fit-content;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.tracklist {
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tracklistitem {
+  margin-bottom: 0px !important;
+}
+
+.tracklistitem:nth-child(odd) {
+  background-color: #000000; /* light gray */
+}
+
+.tracklistitem:nth-child(even) {
+  background-color: #060606; /* white */
 }
 
 .modalcontainer {

@@ -26,6 +26,13 @@ export default function ProfileMenu() {
     setAnchorEl(null);
   };
 
+  const handleClick = (callback: () => void) => {
+    return () => {
+      setAnchorEl(null); // closes the menu
+      callback(); // performs the action
+    };
+  };
+
   const open = Boolean(anchorEl);
   const router = useRouter();
 
@@ -57,6 +64,7 @@ export default function ProfileMenu() {
           </IconButton>
         </Tooltip>
         <Menu
+          disableScrollLock
           anchorEl={anchorEl}
           id="account-menu"
           open={open}
@@ -101,7 +109,9 @@ export default function ProfileMenu() {
           >
             <strong> {user?.username}</strong>
           </p>
-          <MenuItem onClick={() => router.push("/profile")}>Profile</MenuItem>
+          <MenuItem onClick={handleClick(() => router.push("/profile"))}>
+            Profile
+          </MenuItem>
           <MenuItem onClick={handleMouseLeave}>My account</MenuItem>
           <Divider />
 
@@ -111,13 +121,13 @@ export default function ProfileMenu() {
             </ListItemIcon>
             Settings
           </MenuItem>
-          <MenuItem onClick={() => router.push("/upload")}>
+          <MenuItem onClick={handleClick(() => router.push("/upload"))}>
             <ListItemIcon>
               <Upload fontSize="small" />
             </ListItemIcon>
             Upload
           </MenuItem>
-          <MenuItem onClick={logout}>
+          <MenuItem onClick={handleClick(logout)}>
             <ListItemIcon>
               <Logout fontSize="small" />
             </ListItemIcon>

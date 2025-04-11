@@ -2,6 +2,7 @@
 
 import { Song } from "@/lib/types";
 import Track from "./Track";
+import "../style/main.css";
 
 interface TrackListProps {
   tracks: Song[];
@@ -21,35 +22,10 @@ export default function TrackList({
   showSave, // Default to true if not provided
 }: TrackListProps) {
   return (
-    <div
-      style={{
-        height: "fit-content",
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-      }}
-    >
-      <ul
-        style={{
-          maxWidth: "1000px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px", // ✅ Add gap for consistent spacing
-          padding: 0,
-          margin: 0,
-          listStyle: "none",
-        }}
-      >
+    <div className="tracklistwrapper">
+      <ul className="tracklist">
         {tracks.map((track) => (
-          <li
-            key={track.id}
-            style={{
-              marginBottom: "1rem", // ✅ Ensure margin is consistent
-              padding: "0",
-              borderRadius: "14px",
-            }}
-          >
+          <li key={track.id} className="tracklistitem">
             <Track
               song={track}
               onVote={(songId, value) => onVote(songId, value)}
